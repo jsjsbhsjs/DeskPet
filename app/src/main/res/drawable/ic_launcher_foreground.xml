@@ -1,14 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp" android:height="108dp"
-    android:viewportWidth="108" android:viewportHeight="108">
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Background circle (soft pink) -->
     <path
-        android:fillColor="#FF6B6B"
-        android:pathData="M54,30 C40,30 30,42 30,54 C30,66 40,78 54,78 C68,78 78,66 78,54 C78,42 68,30 54,30Z"/>
+        android:fillColor="#FFB5C2"
+        android:pathData="M54,16C33,16 16,33 16,54C16,75 33,92 54,92C75,92 92,75 92,54C92,33 75,16 54,16Z"/>
+    
+    <!-- Face (white) -->
     <path
-        android:fillColor="#FFF"
-        android:pathData="M44,48 L50,48 L50,60 L44,60Z"/>
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,28C40,28 28,40 28,54C28,68 40,80 54,80C68,80 80,68 80,54C80,40 68,28 54,28Z"/>
+    
+    <!-- Left eye -->
     <path
-        android:fillColor="#FFF"
-        android:pathData="M58,48 L64,48 L64,60 L58,60Z"/>
+        android:fillColor="#4A4A4A"
+        android:pathData="M43,48C43,45 46,43 49,43C52,43 55,45 55,48C55,51 52,53 49,53C46,53 43,51 43,48Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M45,46C45,45 46,44 47,44C48,44 49,45 49,46C49,47 48,48 47,48C46,48 45,47 45,46Z"/>
+    
+    <!-- Right eye -->
+    <path
+        android:fillColor="#4A4A4A"
+        android:pathData="M53,48C53,45 56,43 59,43C62,43 65,45 65,48C65,51 62,53 59,53C56,53 53,51 53,48Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M55,46C55,45 56,44 57,44C58,44 59,45 59,46C59,47 58,48 57,48C56,48 55,47 55,46Z"/>
+    
+    <!-- Blush left -->
+    <path
+        android:fillColor="#FFB5C2"
+        android:pathData="M37,56C37,54 40,53 43,55C43,57 40,59 37,58C36,57 36,57 37,56Z"/>
+    
+    <!-- Blush right -->
+    <path
+        android:fillColor="#FFB5C2"
+        android:pathData="M65,56C65,54 68,53 71,55C71,57 68,59 65,58C64,57 64,57 65,56Z"/>
+    
+    <!-- Mouth (smile) -->
+    <path
+        android:fillColor="#FF8A9E"
+        android:strokeWidth="1.5"
+        android:strokeColor="#FF8A9E"
+        android:pathData="M47,62C50,66 58,66 61,62"/>
+    
+    <!-- Left claw -->
+    <path
+        android:fillColor="#FF8A9E"
+        android:pathData="M26,44C20,40 16,46 18,50C20,54 24,52 26,48Z"/>
+    <path
+        android:fillColor="#FF8A9E"
+        android:pathData="M20,38C16,36 12,40 14,44C16,48 20,46 22,42Z"/>
+    
+    <!-- Right claw -->
+    <path
+        android:fillColor="#FF8A9E"
+        android:pathData="M82,44C88,40 92,46 90,50C88,54 84,52 82,48Z"/>
+    <path
+        android:fillColor="#FF8A9E"
+        android:pathData="M88,38C92,36 96,40 94,44C92,48 88,46 86,42Z"/>
+    
 </vector>
