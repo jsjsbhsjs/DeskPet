@@ -22,42 +22,16 @@ jobs:
         with:
           gradle-version: 8.5
 
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper --gradle-version=8.5
+
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: List Android SDK
-        run: |
-          echo "ANDROID_HOME: $ANDROID_HOME"
-          ls -la $ANDROID_HOME/platforms/ 2>/dev/null || echo "No platforms dir"
-          ls -la $ANDROID_HOME/build-tools/ 2>/dev/null || echo "No build-tools dir"
-          echo "SDK root: $ANDROID_SDK_ROOT"
-
       - name: Build APK
-        run: |
-          ./gradlew assembleRelease --stacktrace 2>&1 | tee build.log
-          echo "EXIT_CODE=$?" >> $GITHUB_ENV
-        continue-on-error: true
-
-      - name: Show build error
-        run: |
-          echo "=== Build log tail ==="
-          tail -100 build.log
-          echo "=== End ==="
-
-      - name: Upload build log
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: build.log
-
-      - name: Check exit code
-        run: |
-          if [ "${{ env.EXIT_CODE }}" != "0" ]; then
-            exit 1
-          fi
+        run: ./gradlew assembleRelease --stacktrace
 
       - name: Upload APK
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: DeskPet-APK
