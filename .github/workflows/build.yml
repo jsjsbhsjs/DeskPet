@@ -29,9 +29,20 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        continue-on-error: true
+        run: |
+          ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
 
       - name: Upload Debug APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: DeskPet-Debug-APK
