@@ -1,0 +1,51 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+#pet-container {
+    position: relative;
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#pet {
+    width: 120px; height: 120px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+#pet img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+#pet.dragging { transform: scale(0.95); }
+#pet.tapped { animation: tapBounce 0.2s ease; }
+@keyframes tapBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.85); }
+    100% { transform: scale(1); }
+}
+#bubble {
+    position: absolute;
+    top: -40px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.95);
+    border-radius: 12px;
+    padding: 6px 14px;
+    font-size: 12px;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    font-family: -apple-system, sans-serif;
+}
+#bubble.hidden { opacity: 0; }
+#bubble.normal { color: #333; background: rgba(255,255,255,0.95); }
+#bubble.love { color: #e74c3c; background: rgba(255,230,235,0.95); }
+#bubble.whisper { color: #666; background: rgba(240,240,245,0.95); font-style: italic; }
+#bubble.angry { color: #c0392b; background: rgba(255,220,220,0.95); font-weight: bold; }
