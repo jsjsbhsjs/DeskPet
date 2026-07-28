@@ -57,7 +57,7 @@ class OverlayService : Service() {
             setBackgroundColor(0x00000000)
             setLayerType(View.LAYER_TYPE_HARDWARE, null)
             settings.apply {
-                setAppCacheEnabled(true)
+                cacheMode = WebSettings.LOAD_DEFAULT
                 databaseEnabled = true
                 domStorageEnabled = true
                 javaScriptEnabled = true
