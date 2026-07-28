@@ -4,6 +4,7 @@ import okhttp3.*
 import okhttp3.sse.*
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
+import okhttp3.MediaType.Companion.toMediaType
 
 class SupabaseClient(private val url: String, private val anonKey: String) {
 
@@ -51,7 +52,7 @@ class SupabaseClient(private val url: String, private val anonKey: String) {
             .header("Authorization", "Bearer $anonKey")
             .header("Content-Type", "application/json")
             .header("Prefer", "return=minimal")
-            .post(RequestBody.create(MediaType.parse("application/json"), state.toString()))
+            .post(RequestBody.create("application/json".toMediaType(), state.toString()))
             .build()
 
         client.newCall(request).enqueue(object : Callback {
