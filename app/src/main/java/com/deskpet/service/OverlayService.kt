@@ -150,7 +150,7 @@ class OverlayService : Service() {
     }
 
     fun showBubble(text: String, style: String = "normal") {
-        val escaped = text.replace("\\", "\\\\").replace(""", "\\"")
+        val escaped = text.replace("\\", "\\\\").replace("'", "\\'")
         evaluateJS("window.petEngine && window.petEngine.showBubble('$escaped', '$style')")
     }
 
