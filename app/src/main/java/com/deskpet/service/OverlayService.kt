@@ -13,6 +13,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.WebSettings
 import androidx.core.app.NotificationCompat
+import okhttp3.MediaType.Companion.toMediaType
 import com.deskpet.R
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -240,8 +241,8 @@ class OverlayService : Service() {
     }
 
     private fun markBubbleRead(id: Long) {
-        val json = "{"is_read":true}"
-        val reqBody = RequestBody.create(MediaType.parse("application/json"), json)
+        val json = """{"is_read":true}"""
+        val reqBody = RequestBody.create("application/json".toMediaType(), json)
         val url = "${SUPABASE_URL}/rest/v1/bubble_content?id=eq.${id}"
         val req = Request.Builder()
             .url(url)
@@ -251,6 +252,7 @@ class OverlayService : Service() {
             .addHeader("Content-Type", "application/json")
             .addHeader("Prefer", "return=minimal")
             .build()
+        val client = OkHttpClient()
         client.newCall(req).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {}
             override fun onResponse(call: Call, response: Response) {}
