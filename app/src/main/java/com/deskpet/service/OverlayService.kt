@@ -14,6 +14,10 @@ import android.webkit.WebViewClient
 import android.webkit.WebSettings
 import androidx.core.app.NotificationCompat
 import com.deskpet.R
+import com.google.gson.Gson
+import com.google.gson.JsonParser
+import okhttp3.*
+import java.io.IOException
 
 class OverlayService : Service() {
 
@@ -22,6 +26,11 @@ class OverlayService : Service() {
     private var params: WindowManager.LayoutParams? = null
 
     companion object {
+        const val SUPABASE_URL = "https://rvnruqwusqaynrcphgod.supabase.co"
+        const val SUPABASE_KEY = "sb_publishable_1o7IA1_fUweDJ2mRKj_YNw_ClbpBSzq"
+        var lastBubbleId: Long = 0L
+        var lastStateId: Long = 0L
+        var pollingHandler: Handler? = null
         private const val CHANNEL_ID = "deskpet_overlay"
         private const val NOTIFICATION_ID = 1001
         private const val PET_SIZE_DP = 180
@@ -35,6 +44,7 @@ class OverlayService : Service() {
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, buildNotification("[Pet] 小爪子正在看着你"))
         setupOverlay()
+        startPolling()
     }
 
     private fun setupOverlay() {
@@ -121,7 +131,7 @@ class OverlayService : Service() {
                             lastTapTime = now
                             // Multi-tap counting
                             if (tapCount == 0) firstTapTime = now
-                            tapCount++
+                           tapCount++
                             if (now - firstTapTime < 2000) {
                                 when (tapCount) {
                                     3 -> { evaluateJS("window.petEngine && window.petEngine.onTripleTap()"); tapCount = 0 }
@@ -129,7 +139,7 @@ class OverlayService : Service() {
                                 }
                             } else {
                                 tapCount = 0
-                                evaluateJS("window.petEngine && window.petEngine.onTap()")
+                                  evaluateJS("window.petEngine && window.petEngine.onTap()")
                             }
                         }
                     } else {
@@ -155,6 +165,96 @@ class OverlayService : Service() {
     fun showBubble(text: String, style: String = "normal") {
         val escaped = text.replace("\\", "\\\\").replace("'", "\\'")
         evaluateJS("window.petEngine && window.petEngine.showBubble('$escaped', '$style')")
+    }
+    private fun startPolling() {
+        pollingHandler = Handler(Looper.getMainLooper())
+        pollingHandler?.post(object : Runnable {
+            override fun run() {
+                pollAiState()
+                pollingHandler?.postDelayed(this, 5000)
+            }
+        })
+    }
+
+    private fun pollAiState() {
+        val client = OkHttpClient()
+        val gson = Gson()
+
+        // 读取 clawd_state 表情状态
+        val stateUrl = "${SUPABASE_URL}/rest/v1/clawd_state?select=id,emotion,intensity&order=id.desc&limit=1"
+        val stateReq = Request.Builder()
+            .url(stateUrl)
+            .addHeader("apikey", SUPABASE_KEY)
+            .addHeader("Authorization", "Bearer ${SUPABASE_KEY}")
+            .build()
+        client.newCall(stateReq).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+            override fun onResponse(call: Call, response: Response) {
+                val body = response.body?.string()
+                if (body != null && body != "[]" && body.isNotEmpty()) {
+                    try {
+                        val arr = JsonParser.parseString(body).asJsonArray
+                        if (arr.size() > 0) {
+                            val obj = arr.get(0).asJsonObject
+                            val id = obj.get("id").asLong
+                            if (id > lastStateId) {
+                                lastStateId = id
+                                val emotion = obj.get("emotion").asString
+                                setPetState(emotion)
+                            }
+                        }
+                    } catch (e: Exception) {}
+                }
+            }
+        })
+
+        // 读取 bubble_content 气泡消息
+        val bubbleUrl = "${SUPABASE_URL}/rest/v1/bubble_content?select=id,content,style&is_read=eq.false&order=id.asc&limit=5"
+        val bubbleReq = Request.Builder()
+            .url(bubbleUrl)
+            .addHeader("apikey", SUPABASE_KEY)
+            .addHeader("Authorization", "Bearer ${SUPABASE_KEY}")
+            .build()
+        client.newCall(bubbleReq).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+            override fun onResponse(call: Call, response: Response) {
+                val body = response.body?.string()
+                if (body != null && body != "[]" && body.isNotEmpty()) {
+                    try {
+                        val arr = JsonParser.parseString(body).asJsonArray
+                        for (i in 0 until arr.size()) {
+                            val obj = arr.get(i).asJsonObject
+                            val id = obj.get("id").asLong
+                            if (id > lastBubbleId) {
+                                lastBubbleId = id
+                                val content = obj.get("content").asString
+                                val style = obj.get("style")?.asString ?: "normal"
+                                showBubble(content, style)
+                                markBubbleRead(id)
+                            }
+                        }
+                    } catch (e: Exception) {}
+                }
+            }
+        })
+    }
+
+    private fun markBubbleRead(id: Long) {
+        val json = "{"is_read":true}"
+        val reqBody = RequestBody.create(MediaType.parse("application/json"), json)
+        val url = "${SUPABASE_URL}/rest/v1/bubble_content?id=eq.${id}"
+        val req = Request.Builder()
+            .url(url)
+            .method("PATCH", reqBody)
+            .addHeader("apikey", SUPABASE_KEY)
+            .addHeader("Authorization", "Bearer ${SUPABASE_KEY}")
+            .addHeader("Content-Type", "application/json")
+            .addHeader("Prefer", "return=minimal")
+            .build()
+        client.newCall(req).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+            override fun onResponse(call: Call, response: Response) {}
+        })
     }
 
     // Notification
