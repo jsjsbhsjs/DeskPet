@@ -27,8 +27,8 @@ class OverlayService : Service() {
     private var params: WindowManager.LayoutParams? = null
 
     companion object {
-        const val SUPABASE_URL = "https://rvnruqwusqaynrcphgod.supabase.co"
-        const val SUPABASE_KEY = "sb_publishable_1o7IA1_fUweDJ2mRKj_YNw_ClbpBSzq"
+        var SUPABASE_URL = "https://rvnruqwusqaynrcphgod.supabase.co"
+        var SUPABASE_KEY = "sb_publishable_1o7IA1_fUweDJ2mRKj_YNw_ClbpBSzq"
         var lastBubbleId: Long = 0L
         var lastStateId: Long = 0L
         var pollingHandler: Handler? = null
